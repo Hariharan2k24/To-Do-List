@@ -1,0 +1,40 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 id="text">Welcome</h1>
+    <button id="add">add user</button>
+    <button id="delete">delete user</button>
+</body>
+<script>
+    var add =document.querySelector('#add');
+    var del = document.querySelector('#delete');
+    var text = document.querySelector('#text');
+
+    add.onclick = function(){
+        user_Details();
+    }
+
+    del.onclick = function(){
+        localStorage.clear();
+        text.textContent = 'welcome ';
+    }
+
+    function user_Details(){
+     var name = prompt('please enter your name');
+     localStorage.setItem('usename',name);
+     text.textContent="Welcome "+ name;
+    }
+    
+    if(!localStorage.getItem('username')){
+        user_Details();
+    }
+    else{
+        var name = localStorage.getItem('username');
+        text.textContent = "Welcome " + name;
+    }
+</script>
+</html>

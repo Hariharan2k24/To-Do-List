@@ -1,0 +1,74 @@
+<html lang="en">
+<head>
+    <style>
+    input{
+        outline: none;
+        border: 2px solid black;
+    }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 style="font-size: 50px; margin-top: 100px; margin-bottom: 10px; text-align: center; padding: 0px;">ToDo-List</h1>
+    <p style="font-size: 20px; text-align: center">Lorem ipsum dolor sit amet consectetur.</p>
+    <div style="display: flex; justify-content: center;">
+        <input type="text" id="in_box" style="padding:10px 20px; margin: 10px; border-radius: 10px;">
+        <button id="add" style="padding: 0 40px;">add</button>
+
+    </div>
+    <div id="container"></div>
+</body>
+<script>
+    var add = document.getElementById('add');
+    var in_box = document.getElementById('in_box');
+    var container = document.getElementById('container');
+    
+    let todos = [];
+
+    add.addEventListener('click',function(){
+        var todo_item = document.createElement('p');
+        todo_item.innerHTML = in_box.value;
+        container.appendChild(todo_item);
+
+        var todo_check = document.createElement('input');
+        todo_check.type = 'checkbox';
+        container.appendChild(todo_check);
+
+        var todo_but = document.createElement('button');
+        todo_but.innerHTML = 'edit';
+        container.appendChild(todo_but);
+        
+        var todo_btn = document.createElement('button');
+        todo_btn.innerHTML = 'trash';
+        container.appendChild(todo_btn);
+
+        todo_btn.addEventListener('click',function(){
+            container.removeChild(todo_item);
+            container.removeChild(todo_check);
+            container.removeChild(todo_but);
+            container.removeChild(todo_btn);
+        })
+
+        todo_check.addEventListener('click',function(){
+            if(todo_check.checked){ 
+                todo_item.style.textDecoration ='line-through';
+            }
+            else{
+                todo_item.style.textAlign ='none';
+            }
+        })
+        todo_but.addEventListener('click',function(){
+            var promt = prompt('Edit todo-item',todo_item.textContent);
+            promt.te
+            
+        })
+      
+        in_box.value='';
+    })
+    
+</script>
+</html>
+
+

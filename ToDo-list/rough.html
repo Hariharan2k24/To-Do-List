@@ -1,0 +1,51 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 id="text">Welcome</h1>
+    <button id="add_user">Add User</button>
+    <button id="delete_user">Delete User</button>
+   
+</body>
+<script>
+     var add_btn = document.querySelector('#add_user');
+     var del_btn = document.querySelector('#delete_user');
+     var texxt = document.querySelector('#text');
+     
+     // Function to prompt user details
+     function user_Details(){
+        var name = prompt("Please enter your name");
+        localStorage.setItem("username", name);
+        texxt.textContent = "Welcome " + name;
+     }
+     
+    //  Add user button event listener
+     add_btn.onclick = function(){
+        user_Details();
+     }
+
+     // Delete user button event listener
+     del_btn.onclick = function(){
+        localStorage.clear();
+        texxt.textContent = "Welcome"; // Reset welcome message
+     }
+
+     // Check if username exists in local storage
+     if(!localStorage.getItem('username')){
+        user_Details();
+     } else {
+        var name = localStorage.getItem('username');
+        texxt.textContent = "Welcome " + name;
+     }
+
+//   
+</script>
+</html> -->
+
+
+
+

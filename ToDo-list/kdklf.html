@@ -1,0 +1,133 @@
+<html lang="en">
+<head>
+    <style>
+        input {
+            outline: none;
+            border: 2px solid black;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 style="font-size: 50px; margin-top: 100px; margin-bottom: 10px; text-align: center; padding: 0px;">ToDo-List</h1>
+    <p style="font-size: 20px; text-align: center">Lorem ipsum dolor sit amet consectetur.</p>
+    <div style="display: flex; justify-content: center;">
+        <input type="text" id="in_box" style="padding:10px 20px; margin: 10px; border-radius: 10px;">
+        <button id="add" style="padding: 0 40px;">add</button>
+    </div>
+    <div id="container"></div>
+</body>
+<script>
+    var add = document.getElementById('add');
+    var in_box = document.getElementById('in_box');
+    var container = document.getElementById('container');
+    
+    // Function to save todos to localStorage
+    function saveToLocalStorage(todos) {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    // Function to retrieve todos from localStorage
+    function getFromLocalStorage() {
+        return JSON.parse(localStorage.getItem('todos')) || [];
+    }
+
+    // Function to display todos on the page
+    function displayTodos() {
+        container.innerHTML = ''; // Clear the container before loading
+
+        let todos = getFromLocalStorage();
+        todos.forEach(function(todo) {
+            createTodoElement(todo.text, todo.checked);
+        });
+    }
+
+    // Function to create todo elements in the DOM
+    function createTodoElement(todoText, isChecked = false) {
+        var todoDiv = document.createElement('div');
+        todoDiv.style.margin = '10px';
+        todoDiv.style.display = 'flex';
+        todoDiv.style.justifyContent = 'center';    
+
+        var todo_item = document.createElement('p');
+        todo_item.innerHTML = todoText;
+        todo_item.style.margin = '10px';
+        todo_item.style.textDecoration = isChecked ? 'line-through' : 'none';
+        todoDiv.appendChild(todo_item);
+
+        var todo_check = document.createElement('input');
+        todo_check.type = 'checkbox';
+        todo_check.style.margin = '10px';
+        todo_check.checked = isChecked;
+        todoDiv.appendChild(todo_check);
+
+        var todo_but = document.createElement('button');
+        todo_but.innerHTML = 'edit';
+        todo_but.style.margin = '10px';
+        todoDiv.appendChild(todo_but);
+
+        var todo_btn = document.createElement('button');
+        todo_btn.innerHTML = 'trash';
+        todo_btn.style.margin = '10px';
+        todoDiv.appendChild(todo_btn);
+
+        container.appendChild(todoDiv);
+
+        // Trash button functionality
+        todo_btn.addEventListener('click', function() {
+            container.removeChild(todoDiv);
+            updateLocalStorage();
+        });
+
+        // Checkbox functionality for line-through
+        todo_check.addEventListener('click', function() {
+            todo_item.style.textDecoration = (todo_check.checked) ? 'line-through' : 'none';
+            updateLocalStorage();
+        });
+
+        // Edit button functionality
+        todo_but.addEventListener('click', function() {
+            if (todo_but.innerHTML === 'edit') {
+                var edit_input = document.createElement('input');
+                edit_input.type = 'text';
+                edit_input.value = todo_item.innerHTML;
+                todoDiv.replaceChild(edit_input, todo_item);
+
+                todo_but.innerHTML = 'save';
+            } else {
+                todo_item.innerHTML = todoDiv.querySelector('input[type="text"]').value;
+                todoDiv.replaceChild(todo_item, todoDiv.querySelector('input[type="text"]'));
+                todo_but.innerHTML = 'edit';
+                updateLocalStorage();
+            }
+        });
+    }
+
+    // Function to update localStorage when items are modified
+    function updateLocalStorage() {
+        let todos = [];
+        container.querySelectorAll('div').forEach(function(todoDiv) {
+            let todoText = todoDiv.querySelector('p').innerHTML;
+            let isChecked = todoDiv.querySelector('input[type="checkbox"]').checked;
+            todos.push({ text: todoText, checked: isChecked });
+        });
+        saveToLocalStorage(todos);
+    }
+
+    // Add new todo and save to localStorage
+    add.addEventListener('click', function() {
+        if (in_box.value.trim() === "") return; // Avoid adding empty todo items
+        createTodoElement(in_box.value);
+        updateLocalStorage();  // Save after adding a new todo
+        in_box.value = '';  // Clear the input field after adding the to-do
+    });
+
+    // Display todos from localStorage when the page loads
+    document.addEventListener('DOMContentLoaded', displayTodos);
+
+</script>
+</html>
+
+

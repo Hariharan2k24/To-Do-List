@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(360deg, #F6CEEC, #D939CD);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+        }
+
+        .input-container {
+            position: fixed;
+            top: 20px;
+            width: calc(100% - 40px);
+            max-width: 600px;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            z-index: 100;
+        }
+
+        #todo_container {
+            margin-top: 80px; /* Adjust based on the height of the input container */
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            overflow: hidden; /* Hide overflow */
+        }
+
+        .todo-item:hover {
+            transform: scale(1.02);
+        }
+
+        .todo-text {
+            flex-grow: 1;
+            margin-right: 10px;
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+            max-width: calc(100% - 120px); /* Adjust to fit with checkbox and buttons */
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 1.25rem; /* Adjust to match button size */
+            height: 1.25rem; /* Adjust to match button size */
+            margin-right: 5px;
+        }
+
+        .btn {
+            margin-left: 10px;
+        }
+
+        .input-group .form-control:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Custom focus outline */
+            border-color: #28a745; /* Matches the 'Add' button */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container text-center">
+    <div class="input-container">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="in_box" placeholder="Enter a task">
+            <button class="btn btn-success" id="add">Add</button>
+        </div>
+    </div>
+    <div id="todo_container"></div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+<script>
+    var in_box = document.getElementById("in_box");
+    var add = document.getElementById("add");
+    var todo_container = document.getElementById("todo_container");
+
+    function saveTasks() {
+        const tasks = [];
+        document.querySelectorAll('.todo-item').forEach(item => {
+            tasks.push({
+                text: item.querySelector('.todo-text').textContent,
+                completed: item.querySelector('input[type="checkbox"]').checked
+            });
+        });
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function loadTasks() {
+        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        tasks.forEach(task => {
+            addTask(task.text, task.completed);
+        });
+    }
+
+    function addTask(text, completed = false) {
+        var creat = document.createElement('div');
+        creat.classList.add('todo-item');   
+
+        // Create a span for the text and apply necessary classes for styling
+        var todoText = document.createElement('span');
+        todoText.classList.add('todo-text');
+        todoText.textContent = text;
+        creat.appendChild(todoText);
+
+        // Create checkbox for line-through
+        var checkboxContainer = document.createElement('div');
+        checkboxContainer.classList.add('checkbox-container');
+        
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = completed;
+        checkbox.classList.add('me-2'); // Margin end
+        checkboxContainer.appendChild(checkbox);
+        
+        creat.appendChild(checkboxContainer);
+
+        // Create an edit button with FontAwesome icon
+        var editBtn = document.createElement('button');
+        editBtn.innerHTML = '<i class="fas fa-edit"></i>'; // FontAwesome edit icon
+        editBtn.classList.add('btn', 'btn-warning', 'btn-sm');
+        creat.appendChild(editBtn);
+
+        // Create a delete button with FontAwesome icon
+        var deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>'; // FontAwesome delete icon
+        deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm');
+        creat.appendChild(deleteBtn);
+
+        // Append the new todo item to the container
+        todo_container.appendChild(creat);
+
+        // Toggle line-through on checkbox click
+        checkbox.addEventListener('change', function () {
+            todoText.style.textDecoration = checkbox.checked ? "line-through" : "none";
+            saveTasks();
+        });
+
+        // Edit the text of the todo item
+        editBtn.addEventListener('click', function () {
+            var newText = prompt("Edit your task:", todoText.textContent);
+            if (newText !== null && newText.trim() !== "") {
+                todoText.textContent = newText.trim();
+                saveTasks();
+            }
+        });
+
+        // Delete the entire task when delete button is clicked
+        deleteBtn.addEventListener('click', function () {
+            todo_container.removeChild(creat);
+            saveTasks();
+        });
+
+        // Set the initial text decoration based on the completed status
+        todoText.style.textDecoration = completed ? "line-through" : "none";
+    }
+
+    add.addEventListener('click', function () {
+        var task = in_box.value.trim(); // Get input value and trim extra spaces
+
+        if (task === '') {
+            // If the input is empty, show an alert
+            alert("You're typing nothing.");
+            return; // Stop further execution
+        }
+
+        addTask(task); // Add the new task
+        in_box.value = ''; // Clear the input field
+        saveTasks(); // Save the tasks to local storage
+    });
+
+    // Load tasks from local storage on page load
+    loadTasks();
+</script>
+</body>
+</html>
